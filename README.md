@@ -1,19 +1,24 @@
 # 🚀 Auto Commit Message
 
-![Auto Commit Message Logo](https://opengraph.githubassets.com/88c7bb9179dd2f9f905e829065d2dac83fae36b8/idugeni/auto-commit-message)
+![Auto Commit Message Logo](https://opengraph.githubassets.com/856c5388bec324b86d5fb9acf0cc386418284ea1/idugeni/auto-commit-message)
 
 Auto Commit Message is an automated script that helps generate structured Git commit messages using AI (Google Gemini) based on repository changes.
+
+[![🔥 Git Commit Like a Pro! Use Gemini AI to Automate Perfect Messages! 🚀](https://img.youtube.com/vi/lbaSAhxPpWY/maxresdefault.jpg)](https://www.youtube.com/watch?v=lbaSAhxPpWY)
 
 ## 📂 Project Structure
 
 ```sh
 📦 auto-commit-message
-├── main.py             # Main script for generating commit messages
+├── main.py             # Main script to generate commit messages
 ├── requirements.txt    # Required Python dependencies
 ├── .gitignore          # Ignore unnecessary files
-├── .env.local          # Stores API key (automatically created if not present)
+├── .env.local          # Store API key (automatically created if missing)
 ├── README-ID.md        # Project documentation (Indonesian)
-└── README.md           # Project documentation
+├── README.md           # Project documentation
+├── LICENSE             # Project license
+├── CODE_OF_CONDUCT.md  # Contribution code of conduct
+└── SECURITY.md         # Security guidelines and issue reporting
 ```
 
 ## 📜 Key Features

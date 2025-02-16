@@ -3,39 +3,44 @@ import subprocess
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-# Path global untuk .env.local
+# Suppress gRPC and Abseil warnings (set once at the beginning)
+os.environ["GRPC_VERBOSITY"] = "ERROR"
+os.environ["GLOG_minloglevel"] = "2"
+os.environ["GRPC_TRACE"] = ""
+
+# Global path for .env.local
 GLOBAL_ENV_PATH = r"C:\Tools\auto-commit-message\.env.local"
 
-# Periksa apakah .env.local ada di folder global
+# Check if .env.local exists
 if not os.path.exists(GLOBAL_ENV_PATH):
-    print(f"❌ Error: File .env.local tidak ditemukan di {GLOBAL_ENV_PATH}")
-    print("⚠️ Pastikan Anda telah menyimpan API key di lokasi yang benar.")
+    print(f"❌ Error: .env.local file not found at {GLOBAL_ENV_PATH}")
+    print("⚠️ Make sure you have saved your API key in the correct location.")
     exit(1)
 
-# Load environment variables dari .env.local global
+# Load environment variables
 load_dotenv(GLOBAL_ENV_PATH)
 
-# Ambil API key dari environment
+# Retrieve API key
 api_key = os.getenv("GEMINI_API_KEY")
 if not api_key:
-    print("❌ Error: GEMINI_API_KEY tidak ditemukan di .env.local")
+    print("❌ Error: GEMINI_API_KEY not found in .env.local")
     exit(1)
 
-# Periksa apakah Git tersedia
+# Check if Git is installed
 try:
     subprocess.run(["git", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
 except FileNotFoundError:
-    print("❌ Error: Git tidak ditemukan! Pastikan Git telah diinstal di sistem Anda.")
+    print("❌ Error: Git is not installed! Please install Git before running this script.")
     exit(1)
 
-# Periksa apakah folder saat ini adalah repo Git
+# Check if current directory is a Git repository
 try:
     subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
 except subprocess.CalledProcessError:
-    print("❌ Error: Direktori ini bukan repository Git!")
+    print("❌ Error: This directory is not a Git repository!")
     exit(1)
 
-# Konfigurasi model AI
+# Configure Gemini AI
 genai.configure(api_key=api_key)
 
 generation_config = {
@@ -54,12 +59,12 @@ model = genai.GenerativeModel(
 chat_session = model.start_chat(history=[])
 
 def get_git_diff():
-    """Mendapatkan perubahan dalam repositori Git yang telah di-stage."""
+    """Retrieve staged changes in the Git repository."""
     result = subprocess.run(["git", "diff", "--cached"], capture_output=True, text=True, encoding="utf-8", errors="replace")
     return result.stdout.strip() if result.stdout else None
 
 def generate_commit_message(diff):
-    """Menghasilkan pesan commit dengan format yang sesuai."""
+    """Generate a commit message based on the Git diff."""
     prompt = f"""Generate a Git commit message for the following changes:
     
     {diff}
@@ -81,7 +86,7 @@ def generate_commit_message(diff):
         return "Error generating commit message."
 
 def commit_changes(commit_message):
-    """Melakukan commit dengan pesan yang dihasilkan."""
+    """Commit changes with the generated message."""
     try:
         subprocess.run(["git", "commit", "-m", commit_message], check=True)
         print("✅ Changes committed successfully!")
@@ -93,18 +98,14 @@ def main():
 
     diff = get_git_diff()
     if not diff:
-        print("⚠️ Tidak ada perubahan yang di-*stage*. Silakan gunakan 'git add .' terlebih dahulu.")
-        return  # Langsung keluar tanpa melakukan commit
+        print("⚠️ No staged changes found. Please use 'git add .' first.")
+        return  # Exit without committing
 
     commit_message = generate_commit_message(diff)
     
     print(f"\nGenerated Commit Message:\n{commit_message}\n")
     
     commit_changes(commit_message)
-
-    # Shutdown gRPC properly to avoid warnings
-    os.environ["GRPC_VERBOSITY"] = "NONE"
-    os.environ["GRPC_TRACE"] = ""
 
 if __name__ == "__main__":
     main()

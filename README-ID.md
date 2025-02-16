@@ -1,8 +1,10 @@
 # 🚀 Auto Commit Message
 
-![Auto Commit Message Logo](https://opengraph.githubassets.com/88c7bb9179dd2f9f905e829065d2dac83fae36b8/idugeni/auto-commit-message)
+![Auto Commit Message Logo](https://opengraph.githubassets.com/856c5388bec324b86d5fb9acf0cc386418284ea1/idugeni/auto-commit-message)
 
 Auto Commit Message adalah skrip otomatis yang membantu menghasilkan pesan commit Git yang terstruktur dengan AI (Google Gemini) berdasarkan perubahan dalam repository.
+
+[![🔥 Git Commit Like a Pro! Use Gemini AI to Automate Perfect Messages! 🚀](https://img.youtube.com/vi/lbaSAhxPpWY/maxresdefault.jpg)](https://www.youtube.com/watch?v=lbaSAhxPpWY)
 
 ## 📂 Struktur Proyek
 
@@ -13,7 +15,10 @@ Auto Commit Message adalah skrip otomatis yang membantu menghasilkan pesan commi
 ├── .gitignore          # Mengabaikan file yang tidak perlu
 ├── .env.local          # Menyimpan API key (akan dibuat otomatis jika belum ada)
 ├── README-ID.md        # Dokumentasi proyek ini (Indonesia)
-└── README.md           # Dokumentasi proyek ini
+├── README.md           # Dokumentasi proyek ini
+├── LICENSE             # Lisensi proyek ini
+├── CODE_OF_CONDUCT.md  # Panduan kode etik kontribusi
+└── SECURITY.md         # Panduan keamanan dan pelaporan masalah
 ```
 
 ## 📜 Fitur Utama

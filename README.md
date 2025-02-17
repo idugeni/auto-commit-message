@@ -84,21 +84,56 @@ This tool bridges the gap between rapid development and comprehensive documentat
    pip install -r requirements.txt
    ```
 
+   *run the command in folder `C:\Tools\auto-commit-message\`*
+
+   or
+
+   ```bash
+   pip install google-generativeai
+   pip install python-dotenv
+   ```
+
 5. **Configure API Access**
 
    Create `.env.local` in `C:\Tools\auto-commit-message\` with your Google Gemini API key:
 
-   ```
+   ```sh
    GEMINI_API_KEY=your_api_key_here
    ```
 
 6. **Configure Git Alias**
 
+   This document provides instructions on how to configure a Git alias for the `auto-commit-message` script.  Two options are provided: one for all users (system-wide) and one for a specific user.
+
+   - ***System-Wide Alias (All Users)***
+
+   This configuration applies to all users on the system.  It requires administrator privileges.
+
    ```sh
-   git config --global alias.acm '!C:/Users/%USERNAME%/AppData/Local/Programs/Python/Python313/python.exe C:/Tools/auto-commit-message/main.py'
+   git config --system alias.acm '!C:/Program Files/Python313/python.exe C:/Tools/auto-commit-message/main.py' --replace-all
    ```
 
-   *Note: Adjust the Python path according to your installation if necessary*
+   *Note: This assumes Python is installed in the system-wide location `(e.g., C:/Program Files/Python313)`. Adjust the Python path if necessary.*
+
+   - ***User-Specific Alias***
+
+   This configuration applies only to the current user.
+
+   ```sh
+   git config --global alias.acm '!C:/Users/%USERNAME%/AppData/Local/Programs/Python/Python313/python.exe C:/Tools/auto-commit-message/main.py' --replace-all
+   ```
+
+   *Note: This uses the user-specific Python installation path. The `%USERNAME%` environment variable will be expanded to the current user's name. Adjust the Python path according to your installation if necessary*
+
+   <details>
+     <summary>Troubleshooting</summary>
+
+     If you encounter issues creating the Git alias, the `--replace-all` option ensures that any existing alias with the same name is overwritten. If problems persist, consult the following external resources for further assistance:
+
+     - [How to Set Up Git Aliases](https://dev.to/jsdevspace/how-to-set-up-git-aliases-1hge)
+
+     - [Git Basics - Git Aliases](https://git-scm.com/book/ms/v2/Git-Basics-Git-Aliases)
+   </details>
 
 ## Usage
 

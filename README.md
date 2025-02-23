@@ -20,15 +20,15 @@
   <a href="#license">License</a>
 </p>
 
+---
+
+## Overview
+
 <p align="center">
   <a href="https://www.youtube.com/watch?v=lbaSAhxPpWY">
     <img src="https://img.youtube.com/vi/lbaSAhxPpWY/maxresdefault.jpg" alt="Git Commit Like a Pro! Use Gemini AI to Automate Perfect Messages!" width="600">
   </a>
 </p>
-
----
-
-## Overview
 
 Auto Commit Message is a sophisticated tool designed to elevate your Git workflow through AI-powered commit message generation. By leveraging Google Gemini's advanced language model, this application analyzes repository changes to produce precise, standardized commit messages that follow best practices.
 
@@ -73,7 +73,7 @@ This tool bridges the gap between rapid development and comprehensive documentat
 3. **Execute Setup Script**
 
    ```sh
-   run.bat
+   setup.bat
    ```
 
    This creates the necessary directory structure at `C:\Tools\auto-commit-message\` and copies required files.
@@ -207,16 +207,30 @@ Advanced users can modify the following parameters in `main.py`:
 
 ### Project Structure
 
-```
-📦 auto-commit-message
-├── main.py             # Core application logic
-├── requirements.txt    # Dependency specifications
-├── .gitignore          # Version control exclusions
-├── .env.local          # API credentials (local)
-├── README.md           # Project documentation
-├── LICENSE             # MIT License terms
-├── CODE_OF_CONDUCT.md  # Community guidelines
-└── SECURITY.md         # Security policies
+```sh
+auto-commit-message
+├─ .github                      # GitHub config
+│  ├─ ISSUE_TEMPLATE            # Issue templates
+│  │  ├─ bug_report.md          # Bug report
+│  │  ├─ custom.md              # Custom issues
+│  │  └─ feature_request.md     # Feature request
+│  └─ FUNDING.yml               # Funding info
+├─ __init__.py                  # Package init
+├─ .gitignore                   # Git ignore
+├─ ai_manager.py                # AI manager
+├─ CODE_OF_CONDUCT.md           # Code of conduct
+├─ config.py                    # Config settings
+├─ env_manager.py               # Env manager
+├─ exceptions.py                # Exceptions
+├─ git_manager.py               # Git manager
+├─ LICENSE                      # License info
+├─ logging_setup.py             # Logging setup
+├─ main.py                      # Main logic
+├─ models.py                    # Models
+├─ README.md                    # Docs
+├─ requirements.txt             # Dependencies
+├─ SECURITY.md                  # Security policy
+└─ setup.bat                    # Windows setup
 ```
 
 ### Execution Flow

@@ -19,18 +19,34 @@ class CommitType(Enum):
 
 @dataclass
 class CommitMessage:
-    """Represents a formatted commit message"""
+    """Represents a formatted commit message with enhanced structure"""
     title: str
     description: str
+    footer: str = ""
     is_breaking_change: bool = False
 
     def __post_init__(self):
-        """Format the commit message after initialization"""
+        """Format the commit message after initialization with enhanced validation"""
         self.title = self._format_title(self.title)
         self.description = self._format_description(self.description)
+        self.footer = self._format_footer(self.footer)
 
     def _format_title(self, title: str) -> str:
-        """Format the commit title without applying length restrictions"""
+        """Format the commit title with strict validation and formatting"""
+        title = title.strip()
+        if len(title) > Config.MAX_COMMIT_TITLE_LENGTH:
+            title = title[:Config.MAX_COMMIT_TITLE_LENGTH]
+        
+        # Ensure title starts with valid type
+        if not any(title.startswith(t + ":") for t in Config.COMMIT_TYPES):
+            raise ValueError(f"Title must start with one of: {', '.join(Config.COMMIT_TYPES)}")
+            
+        # Ensure proper spacing after type
+        if ":" in title and not title.split(":")[1].startswith(" "):
+            type_part = title.split(":")[0]
+            desc_part = title.split(":")[1].strip()
+            title = f"{type_part}: {desc_part}"
+            
         return title
 
     def _format_description(self, description: str) -> str:
@@ -86,17 +102,50 @@ class CommitMessage:
             lines.append(line)
         return lines
 
+    def _format_footer(self, footer: str) -> str:
+        """Format the commit footer with proper structure"""
+        if not footer:
+            return ""
+            
+        formatted_lines = []
+        for line in footer.split('\n'):
+            line = line.strip()
+            if line:
+                if not any(line.startswith(prefix) for prefix in ["Refs:", "Closes:", "BREAKING CHANGE:"]):
+                    line = f"Refs: {line}"
+                formatted_lines.extend(self._wrap_line(line))
+                
+        return "\n".join(formatted_lines)
+
     def __str__(self) -> str:
-        """String representation of the commit message"""
+        """Enhanced string representation of the commit message"""
         title = f"{self.title}{'!' if self.is_breaking_change else ''}"
-        return f"{title}\n\n{self.description}" if self.description else title
+        parts = [title]
+        
+        if self.description:
+            parts.extend(["", self.description])
+            
+        if self.footer:
+            parts.extend(["", self.footer])
+            
+        return "\n".join(parts)
 
     @classmethod
     def parse(cls, message_text: str) -> 'CommitMessage':
-        """Parse a commit message text into a CommitMessage object"""
-        parts = message_text.split('\n\n', 1)
-        title = parts[0].strip()
-        description = parts[1].strip() if len(parts) > 1 else ""
+        """Parse a commit message text into a CommitMessage object with enhanced parsing"""
+        sections = message_text.split('\n\n')
+        title = sections[0].strip()
+        description = ""
+        footer = ""
+        
+        if len(sections) > 1:
+            # Check if the last section looks like a footer
+            if len(sections) > 2 and any(sections[-1].strip().startswith(prefix) 
+                                        for prefix in ["Refs:", "Closes:", "BREAKING CHANGE:"]):
+                footer = sections[-1].strip()
+                description = "\n\n".join(sections[1:-1]).strip()
+            else:
+                description = "\n\n".join(sections[1:]).strip()
         
         is_breaking_change = '!' in title
         title = title.replace('!', '') if is_breaking_change else title

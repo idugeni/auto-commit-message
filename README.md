@@ -1,5 +1,10 @@
 # Auto Commit Message
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python Version](https://img.shields.io/badge/python-3.7%2B-blue)](https://www.python.org/)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-brightgreen.svg)](https://conventionalcommits.org)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+
 <p align="center">
   <img src="https://opengraph.githubassets.com/856c5388bec324b86d5fb9acf0cc386418284ea1/idugeni/auto-commit-message" alt="Auto Commit Message" width="600">
 </p>
@@ -30,105 +35,105 @@
   </a>
 </p>
 
-Auto Commit Message is a sophisticated tool designed to elevate your Git workflow through AI-powered commit message generation. By leveraging Google Gemini's advanced language model, this application analyzes repository changes to produce precise, standardized commit messages that follow best practices.
+Auto Commit Message adalah alat canggih yang dirancang untuk meningkatkan alur kerja Git Anda melalui pembuatan pesan commit yang didukung oleh AI. Dengan memanfaatkan model bahasa canggih Google Gemini, aplikasi ini menganalisis perubahan repositori untuk menghasilkan pesan commit yang tepat dan terstandarisasi sesuai dengan praktik terbaik.
 
-This tool bridges the gap between rapid development and comprehensive documentation by ensuring each commit message maintains a professional standard regardless of project complexity or team size.
+Alat ini menjembatani kesenjangan antara pengembangan cepat dan dokumentasi yang komprehensif dengan memastikan setiap pesan commit mempertahankan standar profesional terlepas dari kompleksitas proyek atau ukuran tim.
 
 ## Key Features
 
-- **Intelligent Change Analysis**: Automatically detects and interprets staged changes in your Git repository
-- **AI-Powered Messaging**: Utilizes Google Gemini API to generate contextually accurate commit messages
-- **Conventional Commit Compliance**: Ensures all generated messages adhere to the Conventional Commits specification
-- **Repository Validation**: Verifies working directory is a valid Git repository before execution
-- **Centralized Configuration**: Maintains global settings for consistent use across multiple projects
-- **Git Command Integration**: Seamlessly integrates with Git via custom alias for frictionless workflow
-- **Error Handling**: Robust error detection and reporting with clear guidance for resolution
-- **Cross-Platform Support**: Compatible with Windows environments with planned expansion to macOS and Linux
+- **Analisis Perubahan Cerdas**: Secara otomatis mendeteksi dan menginterpretasikan perubahan yang di-stage dalam repositori Git Anda
+- **Pesan Berbasis AI**: Menggunakan API Google Gemini untuk menghasilkan pesan commit yang akurat secara kontekstual
+- **Kepatuhan Conventional Commit**: Memastikan semua pesan yang dihasilkan mematuhi spesifikasi Conventional Commits
+- **Validasi Repositori**: Memverifikasi direktori kerja adalah repositori Git yang valid sebelum eksekusi
+- **Konfigurasi Terpusat**: Mempertahankan pengaturan global untuk penggunaan yang konsisten di berbagai proyek
+- **Integrasi Perintah Git**: Terintegrasi dengan mulus dengan Git melalui alias kustom untuk alur kerja yang lancar
+- **Penanganan Error**: Deteksi dan pelaporan error yang kuat dengan panduan yang jelas untuk penyelesaian
+- **Dukungan Lintas Platform**: Kompatibel dengan lingkungan Windows dengan rencana ekspansi ke macOS dan Linux
 
 ## Installation
 
 ### Prerequisites
 
-- Python 3.7 or higher
-- Git version 2.20 or higher
+- Python 3.7 atau lebih tinggi
+- Git versi 2.20 atau lebih tinggi
 - Google Gemini API key
 
-### Step-by-Step Installation
+### Langkah-langkah Instalasi
 
-1. **Verify Python Installation**
+1. **Verifikasi Instalasi Python**
 
    ```sh
    python --version
    ```
 
-   *If not available, download and install from [python.org](https://www.python.org/)*
+   *Jika tidak tersedia, unduh dan instal dari [python.org](https://www.python.org/)*
 
-2. **Clone the Repository**
+2. **Clone Repository**
 
    ```sh
    git clone https://github.com/idugeni/auto-commit-message.git
    cd auto-commit-message
    ```
 
-3. **Execute Setup Script**
+3. **Jalankan Script Setup**
 
    ```sh
    setup.bat
    ```
 
-   This creates the necessary directory structure at `C:\Tools\auto-commit-message\` and copies required files.
+   Ini akan membuat struktur direktori yang diperlukan di `C:\Tools\auto-commit-message\` dan menyalin file yang dibutuhkan.
 
-4. **Install Dependencies**
+4. **Instal Dependencies**
 
    ```sh
    pip install -r requirements.txt
    ```
 
-   *run the command in folder `C:\Tools\auto-commit-message\`*
+   *jalankan perintah di folder `C:\Tools\auto-commit-message\`*
 
-   or
+   atau
 
    ```bash
    pip install google-generativeai
    pip install python-dotenv
    ```
 
-5. **Configure API Access**
+5. **Konfigurasi Akses API**
 
-   Create `.env.local` in `C:\Tools\auto-commit-message\` with your Google Gemini API key:
+   Buat `.env.local` di `C:\Tools\auto-commit-message\` dengan API key Google Gemini Anda:
 
    ```sh
    GEMINI_API_KEY=your_api_key_here
    ```
 
-6. **Configure Git Alias**
+6. **Konfigurasi Git Alias**
 
-   This document provides instructions on how to configure a Git alias for the `auto-commit-message` script.  Two options are provided: one for all users (system-wide) and one for a specific user.
+   Dokumen ini menyediakan instruksi tentang cara mengkonfigurasi alias Git untuk script `auto-commit-message`. Dua opsi disediakan: satu untuk semua pengguna (sistem-wide) dan satu untuk pengguna tertentu.
 
-   - ***System-Wide Alias (All Users)***
+   - ***Alias Sistem-Wide (Semua Pengguna)***
 
-   This configuration applies to all users on the system.  It requires administrator privileges.
+   Konfigurasi ini berlaku untuk semua pengguna pada sistem. Memerlukan hak administrator.
 
    ```sh
    git config --system alias.acm '!C:/Program Files/Python313/python.exe C:/Tools/auto-commit-message/main.py' --replace-all
    ```
 
-   *Note: This assumes Python is installed in the system-wide location `(e.g., C:/Program Files/Python313)`. Adjust the Python path if necessary.*
+   *Catatan: Ini mengasumsikan Python diinstal di lokasi sistem-wide `(misalnya, C:/Program Files/Python313)`. Sesuaikan path Python jika diperlukan.*
 
-   - ***User-Specific Alias***
+   - ***Alias Pengguna-Spesifik***
 
-   This configuration applies only to the current user.
+   Konfigurasi ini hanya berlaku untuk pengguna saat ini.
 
    ```sh
    git config --global alias.acm '!C:/Users/%USERNAME%/AppData/Local/Programs/Python/Python313/python.exe C:/Tools/auto-commit-message/main.py' --replace-all
    ```
 
-   *Note: This uses the user-specific Python installation path. The `%USERNAME%` environment variable will be expanded to the current user's name. Adjust the Python path according to your installation if necessary*
+   *Catatan: Ini menggunakan path instalasi Python spesifik pengguna. Variabel lingkungan `%USERNAME%` akan diperluas ke nama pengguna saat ini. Sesuaikan path Python sesuai dengan instalasi Anda jika diperlukan*
 
    <details>
      <summary>Troubleshooting</summary>
 
-     If you encounter issues creating the Git alias, the `--replace-all` option ensures that any existing alias with the same name is overwritten. If problems persist, consult the following external resources for further assistance:
+     Jika Anda mengalami masalah dalam membuat alias Git, opsi `--replace-all` memastikan bahwa setiap alias yang ada dengan nama yang sama akan ditimpa. Jika masalah berlanjut, konsultasikan sumber daya eksternal berikut untuk bantuan lebih lanjut:
 
      - [How to Set Up Git Aliases](https://dev.to/jsdevspace/how-to-set-up-git-aliases-1hge)
 
@@ -137,144 +142,105 @@ This tool bridges the gap between rapid development and comprehensive documentat
 
 ## Usage
 
-### Standard Workflow
+### Alur Kerja Standar
 
-1. **Stage Your Changes**
+1. **Stage Perubahan Anda**
 
    ```sh
    git add .
    ```
 
-   Or selectively stage changes for more precise commit messages:
+   Atau stage perubahan secara selektif untuk pesan commit yang lebih tepat:
 
    ```sh
    git add <path/to/modified/files>
    ```
 
-2. **Generate and Execute Commit**
+2. **Generate dan Eksekusi Commit**
 
    ```sh
    git acm
    ```
 
-   The tool will:
-   - Analyze staged changes
-   - Generate a structured commit message
-   - Execute the commit operation
+   Alat ini akan:
+   - Menganalisis perubahan yang di-stage
+   - Menghasilkan pesan commit terstruktur
+   - Mengeksekusi operasi commit
 
-### Advanced Options
+### Opsi Lanjutan
 
-- **Review Before Commit**: The system will display the generated commit message and prompt for confirmation
-- **Custom Commit Types**: The tool recognizes all standard conventional commit types (see [Commit Types](#commit-types))
+- **Review Sebelum Commit**: Sistem akan menampilkan pesan commit yang dihasilkan dan meminta konfirmasi
+- **Tipe Commit Kustom**: Alat ini mengenali semua tipe commit konvensional standar (lihat [Tipe Commit](#commit-types))
 
 ## Commit Types
 
-Auto Commit Message follows the [Conventional Commits specification](https://www.conventionalcommits.org/), supporting the following commit types:
+Auto Commit Message mengikuti [spesifikasi Conventional Commits](https://www.conventionalcommits.org/), mendukung tipe commit berikut:
 
-| Type | Description |
-|------|-------------|
-| `build` | Changes affecting build system or external dependencies |
-| `ci` | Changes to CI configuration files and scripts |
-| `chore` | Routine maintenance tasks and minor changes |
-| `docs` | Documentation-only changes |
-| `feat` | Introduction of new features |
-| `fix` | Bug fixes |
-| `perf` | Performance improvements |
-| `refactor` | Code changes that neither fix bugs nor add features |
-| `revert` | Reverts a previous commit |
-| `style` | Changes not affecting code functionality (formatting, etc.) |
-| `test` | Adding or correcting tests |
-| `security` | Security-related improvements or fixes |
+| Tipe | Deskripsi |
+|------|------------|
+| `build` | Perubahan yang mempengaruhi sistem build atau dependensi eksternal |
+| `ci` | Perubahan pada file dan script konfigurasi CI |
+| `chore` | Tugas pemeliharaan rutin dan perubahan kecil |
+| `docs` | Perubahan hanya pada dokumentasi |
+| `feat` | Pengenalan fitur baru |
+| `fix` | Perbaikan bug |
+| `perf` | Peningkatan performa |
+| `refactor` | Perubahan kode yang tidak memperbaiki bug atau menambah fitur |
+| `revert` | Membatalkan commit sebelumnya |
+| `style` | Perubahan yang tidak mempengaruhi fungsionalitas kode (pemformatan, dll.) |
+| `test` | Menambah atau memperbaiki test |
+| `security` | Peningkatan atau perbaikan terkait keamanan |
 
 ## Configuration
 
-### Global Configuration
+### Konfigurasi Global
 
-The system uses a centralized configuration file at `C:\Tools\auto-commit-message\.env.local` containing the following parameters:
+Sistem menggunakan file konfigurasi terpusat di `C:\Tools\auto-commit-message\.env.local` yang berisi parameter berikut:
 
-- `GEMINI_API_KEY`: Your Google Gemini API authentication key
+- `GEMINI_API_KEY`: Kunci autentikasi API Google Gemini Anda
 
-### Model Parameters
+### Parameter Model
 
-Advanced users can modify the following parameters in `main.py`:
+Pengguna tingkat lanjut dapat memodifikasi parameter berikut di `main.py`:
 
-- `temperature`: Controls creativity level (0.0-1.0)
-- `top_p`: Nucleus sampling parameter for response diversity
-- `top_k`: Limits vocabulary choices for each token prediction
-- `max_output_tokens`: Maximum response length
+- `temperature`: Mengontrol kreativitas output (0.0 - 1.0)
+- `top_p`: Mengontrol keragaman output (0.0 - 1.0)
+- `top_k`: Membatasi pilihan token berikutnya
+- `max_output_tokens`: Panjang maksimum output yang dihasilkan
 
 ## Architecture
 
-### Project Structure
+Auto Commit Message dibangun dengan arsitektur modular yang terdiri dari komponen utama berikut:
 
-```sh
-auto-commit-message
-├─ .github                      # GitHub config
-│  ├─ ISSUE_TEMPLATE            # Issue templates
-│  │  ├─ bug_report.md          # Bug report
-│  │  ├─ custom.md              # Custom issues
-│  │  └─ feature_request.md     # Feature request
-│  └─ FUNDING.yml               # Funding info
-├─ __init__.py                  # Package init
-├─ .gitignore                   # Git ignore
-├─ ai_manager.py                # AI manager
-├─ CODE_OF_CONDUCT.md           # Code of conduct
-├─ config.py                    # Config settings
-├─ env_manager.py               # Env manager
-├─ exceptions.py                # Exceptions
-├─ git_manager.py               # Git manager
-├─ LICENSE                      # License info
-├─ logging_setup.py             # Logging setup
-├─ main.py                      # Main logic
-├─ models.py                    # Models
-├─ README.md                    # Docs
-├─ requirements.txt             # Dependencies
-├─ SECURITY.md                  # Security policy
-└─ setup.bat                    # Windows setup
-```
-
-### Execution Flow
-
-1. **Environment Validation**:
-   - Checks for valid Git installation
-   - Verifies current directory is a Git repository
-   - Validates API key configuration
-
-2. **Change Analysis**:
-   - Retrieves staged changes via `git diff --cached`
-   - Preprocesses diff content for AI analysis
-
-3. **Message Generation**:
-   - Submits preprocessed changes to Google Gemini API
-   - Applies structured prompt with formatting requirements
-   - Receives AI-generated commit message
-
-4. **Commit Execution**:
-   - Displays generated message for review
-   - Executes commit operation with validated message
+- **GitCommitManager**: Menangani operasi Git dan manajemen repositori
+- **AIModelManager**: Mengintegrasikan dengan API Google Gemini untuk generasi pesan
+- **EnvironmentManager**: Mengelola konfigurasi dan variabel lingkungan
+- **LoggerSetup**: Menyediakan logging terstruktur untuk debugging
 
 ## Contributing
 
-We welcome contributions to improve Auto Commit Message! Please follow these guidelines:
+Kontribusi sangat diterima! Jika Anda ingin berkontribusi:
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-improvement`)
-3. Commit your changes using conventional commits (`feat: add amazing improvement`)
-4. Push to your branch (`git push origin feature/amazing-improvement`)
-5. Open a Pull Request
+1. Fork repositori
+2. Buat branch fitur (`git checkout -b feature/AmazingFeature`)
+3. Commit perubahan Anda (`git commit -m 'Add some AmazingFeature'`)
+4. Push ke branch (`git push origin feature/AmazingFeature`)
+5. Buka Pull Request
 
-For more details, please review our [Code of Conduct](CODE_OF_CONDUCT.md) and [Security Policy](SECURITY.md).
+Pastikan untuk membaca [CONTRIBUTING.md](CONTRIBUTING.md) untuk detail lebih lanjut tentang proses kontribusi kami.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE) - see the LICENSE file for details.
+Didistribusikan di bawah Lisensi MIT. Lihat [LICENSE](LICENSE) untuk informasi lebih lanjut.
+
+## Support
+
+Jika Anda menyukai proyek ini, pertimbangkan untuk:
+- ⭐ Memberikan bintang di GitHub
+- 🐛 Melaporkan bug yang Anda temukan
+- 💡 Mengusulkan fitur baru
+- 🔀 Membuat pull request untuk perbaikan atau peningkatan
 
 ---
 
-<p align="center">
-  <em>Elevate your Git workflow with AI-powered commit messages</em>
-</p>
-
-<p align="center">
-  Made with precision and care by <a href="https://github.com/idugeni">idugeni</a>
-</p>
+<p align="center">Made with ❤️ by <a href="https://github.com/idugeni">idugeni</a></p>

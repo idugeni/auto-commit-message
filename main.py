@@ -29,10 +29,30 @@ def main():
         logger.info("Generating commit message...")
         commit_message = ai_manager_instance.generate_commit_message(diff)
         
-        logger.info(f"\nGenerated Commit Message:\n{'-' * 50}\n{commit_message}\n{'-' * 50}")
+        from rich.prompt import Confirm
+        from rich.console import Console
+        from rich.panel import Panel
+        from rich.style import Style
         
-        if input("Proceed with this commit message? (y/n): ").lower() not in ('y', 'yes'):
-            logger.info("Commit canceled by user")
+        console = Console()
+        
+        # Tampilkan statistik perubahan
+        stats = git_manager_instance.get_stats()
+        console.print(Panel(
+            f"[bold blue]Files Changed:[/bold blue] {stats['files_changed']}\n" +
+            f"[bold green]Insertions:[/bold green] +{stats['insertions']}\n" +
+            f"[bold red]Deletions:[/bold red] -{stats['deletions']}",
+            title="[bold]Commit Statistics[/bold]",
+            border_style="blue"
+        ))
+        
+        # Tampilkan dialog konfirmasi yang lebih menarik
+        if not Confirm.ask(
+            "[bold yellow]Proceed with this commit?[/bold yellow]",
+            default=True,
+            show_default=True
+        ):
+            console.print("[yellow]Commit canceled by user[/yellow]")
             sys.exit(0)
         
         if not git_manager_instance.commit(commit_message):

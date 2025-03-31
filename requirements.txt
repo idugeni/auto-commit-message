@@ -2,3 +2,4 @@ google-generativeai
 python-dotenv
 colorlog
 rich
+absl-py

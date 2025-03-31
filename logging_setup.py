@@ -1,11 +1,3 @@
-import os
-
-os.environ.update({
-    "GRPC_VERBOSITY": "ERROR",
-    "GLOG_minloglevel": "2",
-    "GRPC_TRACE": ""
-})
-
 import logging
 import colorlog
 from config import Config

@@ -34,8 +34,8 @@ class CommitMessage:
     def _format_title(self, title: str) -> str:
         """Format the commit title with strict validation and formatting"""
         title = title.strip()
-        if len(title) > Config.MAX_COMMIT_TITLE_LENGTH:
-            title = title[:Config.MAX_COMMIT_TITLE_LENGTH]
+        if len(title) > Config.MAX_TITLE_LENGTH:
+            title = title[:Config.MAX_TITLE_LENGTH]
         
         # Ensure title starts with valid type
         if not any(title.startswith(t + ":") for t in Config.COMMIT_TYPES):

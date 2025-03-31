@@ -45,8 +45,11 @@ class AIModelManager:
                 chat_session = self.model.start_chat(history=[])
                 progress.update(task, advance=30)
                 
-                response = chat_session.send_message(prompt, timeout=30)
-                progress.update(task, advance=30)
+                try:
+                    response = chat_session.send_message(prompt)
+                    progress.update(task, advance=30)
+                except Exception as e:
+                    raise Exception(f"Failed to send message to AI model: {str(e)}")
                 
                 if not response or not response.text:
                     raise Exception("Empty response received from AI model")
@@ -55,12 +58,16 @@ class AIModelManager:
                 if not any(commit_message.title.startswith(t + ":") for t in Config.COMMIT_TYPES):
                     raise ValueError(f"Invalid commit type. Must be one of: {', '.join(Config.COMMIT_TYPES)}")
                 
+                if len(commit_message.title) > Config.MAX_TITLE_LENGTH:
+                    commit_message.title = commit_message.title[:Config.MAX_TITLE_LENGTH]
+                    self.console.print(f"[yellow]Warning:[/yellow] Commit title was truncated to {Config.MAX_TITLE_LENGTH} characters.")
+                
                 progress.update(task, advance=10)
                 
                 # Display the generated message in a nice panel
                 self.console.print(Panel(
                     f"[bold green]Title:[/bold green] {commit_message.title}\n\n" +
-                    f"[bold green]Description:[/bold green]\n{commit_message.body}",
+                    f"[bold green]Description:[/bold green]\n{commit_message.description}",
                     title="Generated Commit Message",
                     border_style="green"
                 ))

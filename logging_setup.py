@@ -7,7 +7,7 @@ class CustomFormatter(colorlog.ColoredFormatter):
     """Custom formatter for consistent log level with emoji indicators"""
     def format(self, record):
         # Add emoji indicator based on log level
-        record.message = f"{Config.LOG_STYLES.get(record.levelname, '')} {record.message}"
+        record.msg = f"{Config.LOG_STYLES.get(record.levelname, '')} {record.msg}"
         return super().format(record)
 
 class LoggerSetup:

@@ -1,15 +1,18 @@
+# Initialize absl logging first
+from absl import logging as absl_logging
+absl_logging.set_verbosity(absl_logging.ERROR)
+
 import os
 
 # Set logging environment variables early
 os.environ.update({
     "GRPC_VERBOSITY": "ERROR",
     "GLOG_minloglevel": "2",
-    "GRPC_TRACE": ""
+    "GRPC_TRACE": "",
+    "GRPC_ENABLE_FORK_SUPPORT": "0",
+    "GRPC_POLL_STRATEGY": "epoll1",
+    "GRPC_DNS_RESOLVER": "native"
 })
-
-# Initialize absl logging
-from absl import logging as absl_logging
-absl_logging.set_verbosity(absl_logging.ERROR)
 
 import sys
 import logging_setup

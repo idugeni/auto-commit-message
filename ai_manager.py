@@ -56,11 +56,13 @@ class AIModelManager:
                 
                 commit_message = CommitMessage.parse(response.text.strip().strip('`'))
                 if not any(commit_message.title.startswith(t + ":") for t in Config.COMMIT_TYPES):
-                    raise ValueError(f"Invalid commit type. Must be one of: {', '.join(Config.COMMIT_TYPES)}")
+                    raise ValueError(f"Tipe commit tidak valid. Harus salah satu dari: {', '.join(Config.COMMIT_TYPES)}")
                 
                 if len(commit_message.title) > Config.MAX_TITLE_LENGTH:
-                    commit_message.title = commit_message.title[:Config.MAX_TITLE_LENGTH]
-                    self.console.print(f"[yellow]Warning:[/yellow] Commit title was truncated to {Config.MAX_TITLE_LENGTH} characters.")
+                    raise ValueError(
+                        f"Judul commit terlalu panjang. Maksimal {Config.MAX_TITLE_LENGTH} karakter, " 
+                        f"saat ini {len(commit_message.title)} karakter. Mohon persingkat judul commit Anda."
+                    )
                 
                 progress.update(task, advance=10)
                 
@@ -97,10 +99,13 @@ Generate a professional Git commit message following these specific guidelines:
 1. **Title Format (Required):**
    - Must start with one of these types: {commit_types_str}
    - Follow format: "<type>: <brief description>"
-   - Maximum 50 characters
+   - STRICT Maximum 50 characters - be concise and direct
+   - Focus on the core change, avoid unnecessary words
    - Use imperative mood (e.g., "add" not "added")
    - If breaking change, append "!" after type
-   - Example: "feat: add user authentication system"
+   - Examples:
+     * "feat: add JWT auth" (preferred)
+     * "feat: add user authentication system" (too long)
 
 2. **Description Format (Required if changes are significant):**
    - Leave one blank line after title

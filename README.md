@@ -100,9 +100,10 @@ Alat ini menjembatani kesenjangan antara pengembangan cepat dan dokumentasi yang
 
 5. **Konfigurasi Akses API**
 
-   Buat `.env.local` di `C:\Tools\auto-commit-message\` dengan API key Google Gemini Anda:
+   Buat file `.env.local` di direktori proyek Anda (ganti path sesuai dengan lokasi instalasi Anda):
 
    ```sh
+   # Contoh path: C:\Users\YourUsername\Projects\auto-commit-message\.env.local
    GEMINI_API_KEY=your_api_key_here
    ```
 
@@ -115,20 +116,33 @@ Alat ini menjembatani kesenjangan antara pengembangan cepat dan dokumentasi yang
    Konfigurasi ini berlaku untuk semua pengguna pada sistem. Memerlukan hak administrator.
 
    ```sh
-   git config --system alias.acm '!C:/Program Files/Python313/python.exe C:/Tools/auto-commit-message/main.py' --replace-all
+   # Ganti path sesuai dengan lokasi Python dan proyek Anda
+   # Format: git config --system alias.acm '!<Python_Path>/python.exe <Project_Path>/main.py' --replace-all
+   
+   # Contoh untuk Python di Program Files:
+   git config --system alias.acm '!C:/Program Files/Python3xx/python.exe C:/Path/To/Your/auto-commit-message/main.py' --replace-all
    ```
 
-   *Catatan: Ini mengasumsikan Python diinstal di lokasi sistem-wide `(misalnya, C:/Program Files/Python313)`. Sesuaikan path Python jika diperlukan.*
+   *Catatan: Pastikan untuk mengganti:*
+   - *`Python3xx` dengan versi Python Anda (misal: Python310, Python311)*
+   - *`C:/Path/To/Your/auto-commit-message` dengan path lengkap ke direktori proyek Anda*
 
    - ***Alias Pengguna-Spesifik***
 
    Konfigurasi ini hanya berlaku untuk pengguna saat ini.
 
    ```sh
-   git config --global alias.acm '!C:/Users/%USERNAME%/AppData/Local/Programs/Python/Python313/python.exe C:/Tools/auto-commit-message/main.py' --replace-all
+   # Ganti path sesuai dengan lokasi Python dan proyek Anda
+   # Format: git config --global alias.acm '!<Python_Path>/python.exe <Project_Path>/main.py' --replace-all
+   
+   # Contoh untuk Python di AppData:
+   git config --global alias.acm '!C:/Users/%USERNAME%/AppData/Local/Programs/Python/Python3xx/python.exe C:/Path/To/Your/auto-commit-message/main.py' --replace-all
    ```
 
-   *Catatan: Ini menggunakan path instalasi Python spesifik pengguna. Variabel lingkungan `%USERNAME%` akan diperluas ke nama pengguna saat ini. Sesuaikan path Python sesuai dengan instalasi Anda jika diperlukan*
+   *Catatan:*
+   - *Ganti `Python3xx` dengan versi Python Anda yang terinstal*
+   - *Ganti `C:/Path/To/Your/auto-commit-message` dengan path lengkap ke direktori proyek Anda*
+   - *`%USERNAME%` akan otomatis diganti dengan nama pengguna Windows Anda*
 
    <details>
      <summary>Troubleshooting</summary>
@@ -195,9 +209,14 @@ Auto Commit Message mengikuti [spesifikasi Conventional Commits](https://www.con
 
 ### Konfigurasi Global
 
-Sistem menggunakan file konfigurasi terpusat di `C:\Tools\auto-commit-message\.env.local` yang berisi parameter berikut:
+Sistem menggunakan file konfigurasi `.env.local` yang harus dibuat di direktori proyek Anda. File ini berisi parameter berikut:
 
 - `GEMINI_API_KEY`: Kunci autentikasi API Google Gemini Anda
+
+*Catatan Penting:*
+- Pastikan untuk membuat file `.env.local` di direktori proyek Anda (bukan di lokasi lain)
+- File ini harus berada di level yang sama dengan `main.py`
+- Contoh path: `C:/Path/To/Your/auto-commit-message/.env.local`
 
 ### Parameter Model
 

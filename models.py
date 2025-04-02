@@ -55,24 +55,35 @@ class CommitMessage:
         return title
 
     def _format_description(self, description: str) -> str:
-        """Format the commit description with proper line wrapping"""
+        """Format the commit description with proper line wrapping and length limit"""
         if not description:
             return description
 
-        formatted_lines = []
-        for line in description.split('\n'):
-            if not line.strip():
-                formatted_lines.append('')
-                continue
+        # Limit description length to 500 characters
+        if len(description) > 500:
+            description = description[:497] + '...'
 
-            if line.strip().startswith('-'):
-                formatted_lines.extend(
-                    self._wrap_bullet_point(line.strip())
-                )
-            else:
-                formatted_lines.extend(
-                    self._wrap_line(line)
-                )
+        # Split into paragraphs and limit to 3 paragraphs
+        paragraphs = [p.strip() for p in description.split('\n\n') if p.strip()]
+        if len(paragraphs) > 3:
+            paragraphs = paragraphs[:3]
+
+        formatted_lines = []
+        for paragraph in paragraphs:
+            for line in paragraph.split('\n'):
+                if not line.strip():
+                    continue
+
+                if line.strip().startswith('-'):
+                    formatted_lines.extend(self._wrap_bullet_point(line.strip()))
+                else:
+                    formatted_lines.extend(self._wrap_line(line))
+            
+            formatted_lines.append('')  # Add blank line between paragraphs
+
+        # Remove trailing empty line
+        if formatted_lines and not formatted_lines[-1]:
+            formatted_lines.pop()
 
         return '\n'.join(formatted_lines)
 
@@ -155,4 +166,4 @@ class CommitMessage:
         is_breaking_change = '!' in title
         title = title.replace('!', '') if is_breaking_change else title
         
-        return cls(title, description, is_breaking_change)
+        return cls(title, description, footer, is_breaking_change)

@@ -52,8 +52,17 @@ class GitCommitManager:
             stats_output = result.stdout.decode('utf-8').strip().split('\n')
             
             total_files = len([line for line in stats_output if line.strip()])
-            total_insertions = sum(int(line.split()[0]) for line in stats_output if line.strip())
-            total_deletions = sum(int(line.split()[1]) for line in stats_output if line.strip())
+            total_insertions = 0
+            total_deletions = 0
+            
+            for line in stats_output:
+                if not line.strip():
+                    continue
+                parts = line.split()
+                if parts[0] == '-' or parts[1] == '-':  # Binary file
+                    continue
+                total_insertions += int(parts[0])
+                total_deletions += int(parts[1])
             
             return {
                 'files_changed': total_files,

@@ -4,7 +4,7 @@ from typing import Dict, List
 
 class Config:
     """Configuration settings for the application"""
-    GLOBAL_ENV_PATH = Path(r"C:\Tools\auto-commit-message\.env.local")
+    GLOBAL_ENV_PATH = Path(r"C:\Users\offic\Documents\GitHub\auto-commit-message\.env.local")
     MODEL_NAME = "gemini-2.5-pro-exp-03-25"
     GENERATION_CONFIG = {
         "temperature": 0.9,

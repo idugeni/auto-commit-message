@@ -34,8 +34,6 @@ class CommitMessage:
     def _format_title(self, title: str) -> str:
         """Format the commit title with strict validation and formatting"""
         title = title.strip()
-        if len(title) > Config.MAX_TITLE_LENGTH:
-            title = title[:Config.MAX_TITLE_LENGTH]
         
         # Ensure title starts with valid type
         if not any(title.startswith(t + ":") for t in Config.COMMIT_TYPES):
@@ -46,6 +44,13 @@ class CommitMessage:
             type_part = title.split(":")[0]
             desc_part = title.split(":")[1].strip()
             title = f"{type_part}: {desc_part}"
+        
+        # Validate title length without truncation
+        if len(title) > Config.MAX_TITLE_LENGTH:
+            raise ValueError(
+                f"Judul commit terlalu panjang. Maksimal {Config.MAX_TITLE_LENGTH} karakter, " 
+                f"saat ini {len(title)} karakter. Mohon persingkat judul commit Anda."
+            )
             
         return title
 

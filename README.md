@@ -1,9 +1,15 @@
 # Auto Commit Message
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python Version](https://img.shields.io/badge/python-3.7%2B-blue)](https://www.python.org/)
-[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-brightgreen.svg)](https://conventionalcommits.org)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+<p align="center">
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.7%2B-blue" alt="Python Version"></a>
+  <a href="https://conventionalcommits.org"><img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-brightgreen.svg" alt="Conventional Commits"></a>
+  <a href="http://makeapullrequest.com"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
+  <a href="https://github.com/idugeni/auto-commit-message/issues"><img src="https://img.shields.io/github/issues/idugeni/auto-commit-message" alt="GitHub Issues"></a>
+  <a href="https://github.com/idugeni/auto-commit-message/stargazers"><img src="https://img.shields.io/github/stars/idugeni/auto-commit-message" alt="GitHub Stars"></a>
+  <a href="https://github.com/idugeni/auto-commit-message/network/members"><img src="https://img.shields.io/github/forks/idugeni/auto-commit-message" alt="GitHub Forks"></a>
+  <a href="https://github.com/idugeni/auto-commit-message/releases"><img src="https://img.shields.io/github/v/release/idugeni/auto-commit-message" alt="GitHub Release"></a>
+</p>
 
 <p align="center">
   <img src="https://opengraph.githubassets.com/856c5388bec324b86d5fb9acf0cc386418284ea1/idugeni/auto-commit-message" alt="Auto Commit Message" width="600">
@@ -75,74 +81,46 @@ Alat ini menjembatani kesenjangan antara pengembangan cepat dan dokumentasi yang
    cd auto-commit-message
    ```
 
-3. **Jalankan Script Setup**
-
-   ```sh
-   setup.bat
-   ```
-
-   Ini akan membuat struktur direktori yang diperlukan di `C:\Tools\auto-commit-message\` dan menyalin file yang dibutuhkan.
-
-4. **Instal Dependencies**
+3. **Instal Dependencies**
 
    ```sh
    pip install -r requirements.txt
    ```
 
-   *jalankan perintah di folder `C:\Tools\auto-commit-message\`*
-
-   atau
+   atau instal dependencies secara manual:
 
    ```bash
    pip install google-generativeai
    pip install python-dotenv
    ```
 
-5. **Konfigurasi Akses API**
+4. **Konfigurasi Akses API**
 
-   Buat file `.env.local` di direktori proyek Anda (ganti path sesuai dengan lokasi instalasi Anda):
+   Buat file `.env.local` di direktori proyek Anda:
 
    ```sh
-   # Contoh path: C:\Users\YourUsername\Projects\auto-commit-message\.env.local
    GEMINI_API_KEY=your_api_key_here
    ```
 
+   *Catatan: Pastikan file `.env.local` berada di direktori root proyek*
+
 6. **Konfigurasi Git Alias**
 
-   Dokumen ini menyediakan instruksi tentang cara mengkonfigurasi alias Git untuk script `auto-commit-message`. Dua opsi disediakan: satu untuk semua pengguna (sistem-wide) dan satu untuk pengguna tertentu.
+   Konfigurasi Git Alias untuk menggunakan script `auto-commit-message`. Anda dapat memilih antara konfigurasi sistem-wide (semua pengguna) atau pengguna-spesifik.
 
    - ***Alias Sistem-Wide (Semua Pengguna)***
 
-   Konfigurasi ini berlaku untuk semua pengguna pada sistem. Memerlukan hak administrator.
-
    ```sh
-   # Ganti path sesuai dengan lokasi Python dan proyek Anda
-   # Format: git config --system alias.acm '!<Python_Path>/python.exe <Project_Path>/main.py' --replace-all
-   
-   # Contoh untuk Python di Program Files:
-   git config --system alias.acm '!C:/Program Files/Python3xx/python.exe C:/Path/To/Your/auto-commit-message/main.py' --replace-all
+   git config --system alias.acm '!python "<path-to-project>/main.py"' --replace-all
    ```
-
-   *Catatan: Pastikan untuk mengganti:*
-   - *`Python3xx` dengan versi Python Anda (misal: Python310, Python311)*
-   - *`C:/Path/To/Your/auto-commit-message` dengan path lengkap ke direktori proyek Anda*
 
    - ***Alias Pengguna-Spesifik***
 
-   Konfigurasi ini hanya berlaku untuk pengguna saat ini.
-
    ```sh
-   # Ganti path sesuai dengan lokasi Python dan proyek Anda
-   # Format: git config --global alias.acm '!<Python_Path>/python.exe <Project_Path>/main.py' --replace-all
-   
-   # Contoh untuk Python di AppData:
-   git config --global alias.acm '!C:/Users/%USERNAME%/AppData/Local/Programs/Python/Python3xx/python.exe C:/Path/To/Your/auto-commit-message/main.py' --replace-all
+   git config --global alias.acm '!python "<path-to-project>/main.py"' --replace-all
    ```
 
-   *Catatan:*
-   - *Ganti `Python3xx` dengan versi Python Anda yang terinstal*
-   - *Ganti `C:/Path/To/Your/auto-commit-message` dengan path lengkap ke direktori proyek Anda*
-   - *`%USERNAME%` akan otomatis diganti dengan nama pengguna Windows Anda*
+   *Catatan: Ganti `<path-to-project>` dengan path lengkap ke direktori proyek auto-commit-message*
 
    <details>
      <summary>Troubleshooting</summary>

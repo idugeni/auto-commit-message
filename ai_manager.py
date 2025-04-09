@@ -4,21 +4,30 @@ from models import CommitMessage
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
 from rich.console import Console
 from rich.panel import Panel
+from exceptions import APIError
 
 class AIModelManager:
     """Manage AI model operations with precision and care."""
     def __init__(self, api_key: str):
-        self.model = self._initialize_model(api_key)
         self.console = Console()
+        self.model = self._initialize_model(api_key)
 
     @staticmethod
     def _initialize_model(api_key: str) -> genai.GenerativeModel:
         """Initialize and configure the Gemini AI model."""
-        genai.configure(api_key=api_key)
-        return genai.GenerativeModel(
-            model_name=Config.MODEL_NAME,
-            generation_config=Config.GENERATION_CONFIG,
-        )
+        if not api_key or not isinstance(api_key, str) or len(api_key) < 10:
+            raise APIError("Invalid API key format. Please check your API key.")
+            
+        try:
+            genai.configure(api_key=api_key)
+            # Validate API key with a simple operation
+            genai.list_models()
+            return genai.GenerativeModel(
+                model_name=Config.MODEL_NAME,
+                generation_config=Config.GENERATION_CONFIG,
+            )
+        except Exception as e:
+            raise APIError(f"Failed to initialize AI model: {str(e)}")
 
     def generate_commit_message(self, diff: str) -> CommitMessage:
         """Generate commit message using the AI model with enhanced error handling and performance."""

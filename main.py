@@ -19,7 +19,7 @@ import logging_setup
 import env_manager
 import git_manager
 import ai_manager
-from exceptions import GitError, EnvError
+from exceptions import GitError, EnvError, APIError
 
 def main():
     """Main function orchestrating the commit message generation process"""
@@ -30,19 +30,34 @@ def main():
         logger.debug("Setting up environment")
         _, api_key = env_manager.EnvironmentManager.setup()
 
-        git_manager_instance = git_manager.GitCommitManager(logger)
-        ai_manager_instance = ai_manager.AIModelManager(api_key)
-
-        if not git_manager_instance.check_prerequisites():
+        try:
+            git_manager_instance = git_manager.GitCommitManager(logger)
+            git_manager_instance.check_prerequisites()
+        except GitError as e:
+            logger.critical(str(e))
+            sys.exit(1)
+            
+        try:
+            ai_manager_instance = ai_manager.AIModelManager(api_key)
+        except APIError as e:
+            logger.critical(f"API Error: {str(e)}")
             sys.exit(1)
 
-        diff = git_manager_instance.get_diff()
-        if not diff:
-            logger.warning("No staged changes found. Use 'git add <files>' first")
-            sys.exit(0)
+        try:
+            diff = git_manager_instance.get_diff()
+            if not diff:
+                logger.warning("No staged changes found. Use 'git add <files>' first")
+                sys.exit(0)
+        except GitError as e:
+            logger.critical(str(e))
+            sys.exit(1)
 
         logger.info("Generating commit message...")
-        commit_message = ai_manager_instance.generate_commit_message(diff)
+        try:
+            commit_message = ai_manager_instance.generate_commit_message(diff)
+        except APIError as e:
+            logger.critical(f"Failed to generate commit message: {str(e)}")
+            sys.exit(1)
         
         from rich.prompt import Confirm
         from rich.console import Console
@@ -73,7 +88,7 @@ def main():
         if not git_manager_instance.commit(commit_message):
             sys.exit(1)
 
-    except (GitError, EnvError) as e:
+    except (GitError, EnvError, APIError) as e:
         logger.critical(str(e))
         sys.exit(1)
     except Exception as e:

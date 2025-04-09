@@ -55,14 +55,60 @@ class AIModelManager:
                     raise Exception("Empty response received from AI model")
                 
                 commit_message = CommitMessage.parse(response.text.strip().strip('`'))
-                if not any(commit_message.title.startswith(t + ":") for t in Config.COMMIT_TYPES):
-                    raise ValueError(f"Tipe commit tidak valid. Harus salah satu dari: {', '.join(Config.COMMIT_TYPES)}")
                 
+                # Implement automatic retry logic for invalid commit types and long titles
+                max_retries = 3
+                retry_count = 0
+                
+                while retry_count < max_retries:
+                    # Check if current message is valid
+                    if any(commit_message.title.startswith(t + ":") for t in Config.COMMIT_TYPES) and \
+                       len(commit_message.title) <= Config.MAX_TITLE_LENGTH:
+                        break
+                    
+                    retry_count += 1
+                    retry_prompt = prompt
+                    
+                    # Add specific guidance based on the issue
+                    if not any(commit_message.title.startswith(t + ":") for t in Config.COMMIT_TYPES):
+                        retry_prompt += f"\n\nPERHATIAN: Tipe commit tidak valid. Gunakan salah satu dari: {', '.join(Config.COMMIT_TYPES)}"
+                    
+                    if len(commit_message.title) > Config.MAX_TITLE_LENGTH:
+                        retry_prompt += f"\n\nPERHATIAN: Judul commit terlalu panjang ({len(commit_message.title)} karakter). "
+                        retry_prompt += f"Harap buat judul yang lebih singkat (maksimal {Config.MAX_TITLE_LENGTH} karakter) "
+                        retry_prompt += "dengan tetap mempertahankan esensi perubahan."
+                    
+                    try:
+                        self.console.print(f"[yellow]Judul commit tidak valid, mencoba lagi (percobaan ke-{retry_count})...[/yellow]")
+                        response = chat_session.send_message(retry_prompt)
+                        if response and response.text:
+                            commit_message = CommitMessage.parse(response.text.strip().strip('`'))
+                    except Exception as e:
+                        self.console.print(f"[yellow]Percobaan ke-{retry_count} gagal: {str(e)}[/yellow]")
+                        if retry_count == max_retries:
+                            # Don't raise exception, continue with fixing the message
+                            break
+                        continue
+                
+                # If we still have invalid commit type after retries, use a default type
+                if not any(commit_message.title.startswith(t + ":") for t in Config.COMMIT_TYPES):
+                    original_desc = commit_message.title
+                    commit_message.title = f"chore: {original_desc[:Config.MAX_TITLE_LENGTH-6]}"
+                    self.console.print("[yellow]Menggunakan tipe commit default 'chore'[/yellow]")
+                
+                # If title is still too long after retries, truncate it
                 if len(commit_message.title) > Config.MAX_TITLE_LENGTH:
-                    raise ValueError(
-                        f"Judul commit terlalu panjang. Maksimal {Config.MAX_TITLE_LENGTH} karakter, " 
-                        f"saat ini {len(commit_message.title)} karakter. Mohon persingkat judul commit Anda."
-                    )
+                    type_part = commit_message.title.split(":")[0]
+                    desc_part = commit_message.title.split(":")[1].strip()
+                    truncated_desc = desc_part[:Config.MAX_TITLE_LENGTH - len(type_part) - 2]
+                    commit_message.title = f"{type_part}: {truncated_desc}"
+                    self.console.print(f"[yellow]Judul commit dipotong otomatis untuk memenuhi batas {Config.MAX_TITLE_LENGTH} karakter[/yellow]")
+                    
+                    # Add truncation note to description
+                    if not commit_message.description:
+                        commit_message.description = f"Original title: {desc_part}"
+                    else:
+                        commit_message.description = f"Original title: {desc_part}\n\n{commit_message.description}"
                 
                 progress.update(task, advance=10)
                 

@@ -6,3 +6,7 @@ class GitError(Exception):
 class EnvError(Exception):
     """Exception raised for environment-related errors"""
     pass
+
+class APIError(Exception):
+    """Exception raised for API-related errors"""
+    pass

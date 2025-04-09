@@ -1,10 +1,12 @@
 # config.py
 from pathlib import Path
+import os
 from typing import Dict, List
 
 class Config:
     """Configuration settings for the application"""
-    GLOBAL_ENV_PATH = Path(r"C:\Users\offic\Documents\GitHub\auto-commit-message\.env.local")
+    # Use platform-independent path for the environment file
+    GLOBAL_ENV_PATH = Path(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env.local"))
     MODEL_NAME = "gemini-2.5-pro-exp-03-25"
     GENERATION_CONFIG = {
         "temperature": 0.9,

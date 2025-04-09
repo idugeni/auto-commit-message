@@ -92,6 +92,9 @@ Alat ini menjembatani kesenjangan antara pengembangan cepat dan dokumentasi yang
    ```bash
    pip install google-generativeai
    pip install python-dotenv
+   pip install colorlog
+   pip install rich
+   pip install absl-py
    ```
 
 4. **Konfigurasi Akses API**
@@ -106,7 +109,7 @@ Alat ini menjembatani kesenjangan antara pengembangan cepat dan dokumentasi yang
 
 6. **Konfigurasi Git Alias**
 
-   Konfigurasi Git Alias untuk menggunakan script `auto-commit-message`. Anda dapat memilih antara konfigurasi sistem-wide (semua pengguna) atau pengguna-spesifik.
+   Konfigurasi Git Alias untuk menggunakan script `auto-commit-message`. Anda dapat memilih antara konfigurasi sistem-wide (semua pengguna) atau pengguna-spesifik. Nama alias 'acm' dapat diganti sesuai preferensi Anda, misalnya menjadi 'cm', 'commit-ai', atau nama lain yang Anda inginkan.
 
    - ***Alias Sistem-Wide (Semua Pengguna)***
 
@@ -150,8 +153,11 @@ Alat ini menjembatani kesenjangan antara pengembangan cepat dan dokumentasi yang
 
 2. **Generate dan Eksekusi Commit**
 
+   Gunakan alias yang telah Anda konfigurasi sebelumnya (misalnya 'acm', 'cm', atau 'commit-ai'):
+
    ```sh
-   git acm
+   git <your-alias>
+   # Contoh: git acm, git cm, atau git commit-ai
    ```
 
    Alat ini akan:

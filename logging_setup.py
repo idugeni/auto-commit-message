@@ -23,7 +23,7 @@ class LoggerSetup:
 
         logger = logging.getLogger('auto-commit-message')
         logger.setLevel(logging.DEBUG)
-        logger.handlers = []  # Menghapus handler yang sudah ada
+        logger.handlers = []  # Clear existing handlers
         logger.addHandler(handler)
 
         return logger

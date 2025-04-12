@@ -63,47 +63,60 @@ class AIModelManager:
                 if not response or not response.text:
                     raise Exception("Empty response received from AI model")
                 
-                commit_message = CommitMessage.parse(response.text.strip().strip('`'))
-                
-                # Implement automatic retry logic for invalid commit types and long titles
+                # Initialize variables for retry logic
                 max_retries = 3
                 retry_count = 0
+                original_response = response.text.strip().strip('`')
                 
-                while retry_count < max_retries:
-                    # Check if current message is valid
-                    if any(commit_message.title.startswith(t + ":") for t in Config.COMMIT_TYPES) and \
-                       len(commit_message.title) <= Config.MAX_TITLE_LENGTH:
-                        break
-                    
-                    retry_count += 1
-                    retry_prompt = prompt
-                    
-                    # Add specific guidance based on the issue
-                    if not any(commit_message.title.startswith(t + ":") for t in Config.COMMIT_TYPES):
-                        retry_prompt += f"\n\nPERHATIAN: Tipe commit tidak valid. Gunakan salah satu dari: {', '.join(Config.COMMIT_TYPES)}"
-                    
-                    if len(commit_message.title) > Config.MAX_TITLE_LENGTH:
-                        retry_prompt += f"\n\nPERHATIAN: Judul commit terlalu panjang ({len(commit_message.title)} karakter). "
-                        retry_prompt += f"Harap buat judul yang lebih singkat (maksimal {Config.MAX_TITLE_LENGTH} karakter) "
-                        retry_prompt += "dengan tetap mempertahankan esensi perubahan."
-                    
+                while True:
                     try:
-                        self.console.print(f"[yellow]Judul commit tidak valid, mencoba lagi (percobaan ke-{retry_count})...[/yellow]")
-                        response = chat_session.send_message(retry_prompt)
-                        if response and response.text:
-                            commit_message = CommitMessage.parse(response.text.strip().strip('`'))
-                    except Exception as e:
-                        self.console.print(f"[yellow]Percobaan ke-{retry_count} gagal: {str(e)}[/yellow]")
-                        if retry_count == max_retries:
-                            # Don't raise exception, continue with fixing the message
+                        # Try to parse and validate commit message
+                        commit_message = CommitMessage.parse(response.text.strip().strip('`'))
+                        break  # If successful
+                    except ValueError as e:
+                        if "Title length" in str(e) and retry_count < max_retries:
+                            retry_count += 1
+                            self.console.print(f"[yellow]Title too long. Attempting to generate a shorter title (attempt {retry_count}/{max_retries})...[/yellow]")
+                            
+                            # Create a more specific prompt for shorter title
+                            retry_prompt = f"{prompt}\n\nIMPORTANT: Previous title was too long. Please generate a new commit message with these requirements:\n"
+                            retry_prompt += f"1. Title MUST be shorter than {Config.MAX_TITLE_LENGTH} characters\n"
+                            retry_prompt += "2. Keep the same commit type\n"
+                            retry_prompt += "3. Maintain the core meaning but be more concise\n"
+                            retry_prompt += "4. Focus on the most important aspect of the change"
+                            
+                            response = chat_session.send_message(retry_prompt)
+                            if not response or not response.text:
+                                raise Exception("No response received from AI model during retry")
+                        else:
+                            # If we've exhausted retries or it's a different error, use the original response
+                            self.console.print(f"[yellow]Unable to generate a shorter title after {retry_count} attempts. Using original response.[/yellow]")
+                            response_text = original_response
+                            parsed_msg = response_text.split('\n', 1)
+                            title = parsed_msg[0]
+                            desc = parsed_msg[1] if len(parsed_msg) > 1 else ""
+                            
+                            # Extract commit type if present, otherwise use 'chore'
+                            type_part = title.split(":")[0] if ":" in title else "chore"
+                            desc_part = title.split(":")[1].strip() if ":" in title else title
+                            
+                            # Calculate available length and truncate
+                            available_length = Config.MAX_TITLE_LENGTH - len(type_part) - 2
+                            truncated_desc = desc_part[:available_length].rsplit(' ', 1)[0] if ' ' in desc_part[:available_length] else desc_part[:available_length]
+                            title = f"{type_part}: {truncated_desc}"
+                            
+                            # Add original title to description
+                            original_title_note = f"Original title: {parsed_msg[0]}"
+                            desc = f"{original_title_note}\n\n{desc}" if desc else original_title_note
+                            
+                            commit_message = CommitMessage(title, desc)
                             break
-                        continue
                 
                 # If we still have invalid commit type after retries, use a default type
                 if not any(commit_message.title.startswith(t + ":") for t in Config.COMMIT_TYPES):
                     original_desc = commit_message.title
                     commit_message.title = f"chore: {original_desc[:Config.MAX_TITLE_LENGTH-6]}"
-                    self.console.print("[yellow]Menggunakan tipe commit default 'chore'[/yellow]")
+                    self.console.print("[yellow]Using default commit type 'chore'[/yellow]")
                 
                 # If title is still too long after retries, truncate it
                 if len(commit_message.title) > Config.MAX_TITLE_LENGTH:
@@ -111,7 +124,7 @@ class AIModelManager:
                     desc_part = commit_message.title.split(":")[1].strip()
                     truncated_desc = desc_part[:Config.MAX_TITLE_LENGTH - len(type_part) - 2]
                     commit_message.title = f"{type_part}: {truncated_desc}"
-                    self.console.print(f"[yellow]Judul commit dipotong otomatis untuk memenuhi batas {Config.MAX_TITLE_LENGTH} karakter[/yellow]")
+                    self.console.print(f"[yellow]Commit title automatically truncated to meet {Config.MAX_TITLE_LENGTH} character limit[/yellow]")
                     
                     # Add truncation note to description
                     if not commit_message.description:

@@ -45,12 +45,9 @@ class CommitMessage:
             desc_part = title.split(":")[1].strip()
             title = f"{type_part}: {desc_part}"
         
-        # Validate title length without truncation
+        # Check if title is too long and raise error
         if len(title) > Config.MAX_TITLE_LENGTH:
-            raise ValueError(
-                f"Judul commit terlalu panjang. Maksimal {Config.MAX_TITLE_LENGTH} karakter, " 
-                f"saat ini {len(title)} karakter. Mohon persingkat judul commit Anda."
-            )
+            raise ValueError(f"Title length ({len(title)}) exceeds maximum length ({Config.MAX_TITLE_LENGTH}). Please provide a shorter title.")
             
         return title
 
@@ -88,19 +85,27 @@ class CommitMessage:
         return '\n'.join(formatted_lines)
 
     def _wrap_bullet_point(self, line: str) -> list[str]:
-        """Wrap a bullet point line at the maximum length"""
+        """Wrap a bullet point line at the maximum length with improved efficiency"""
+        if len(line) <= Config.MAX_COMMIT_BODY_LENGTH:
+            return [line]
+            
         lines = []
         current_line = line
-
+        indent = "  "
+        
         while len(current_line) > Config.MAX_COMMIT_BODY_LENGTH:
-            split_point = current_line[:Config.MAX_COMMIT_BODY_LENGTH].rfind(' ')
+            available_length = Config.MAX_COMMIT_BODY_LENGTH - (len(indent) if lines else 0)
+            split_point = current_line[:available_length].rfind(' ')
+            
             if split_point == -1:
-                split_point = Config.MAX_COMMIT_BODY_LENGTH
-
-            lines.append(current_line[:split_point])
-            current_line = "  " + current_line[split_point:].strip()
-
-        lines.append(current_line)
+                split_point = available_length
+                
+            lines.append((indent if lines else "") + current_line[:split_point].rstrip())
+            current_line = current_line[split_point:].strip()
+            
+        if current_line:
+            lines.append((indent if lines else "") + current_line)
+            
         return lines
 
     def _wrap_line(self, line: str) -> list[str]:

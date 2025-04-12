@@ -2,14 +2,22 @@
 
 <div align="center">
 
+<div>
 <img src="https://img.shields.io/badge/python-3.7%2B-blue" alt="Python Version" />
 <img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-brightgreen.svg" alt="Conventional Commits" />
 <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" />
+</div>
+
+<div>
 <img src="https://img.shields.io/github/v/release/idugeni/auto-commit-message" alt="GitHub Release" />
 <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" />
 <img src="https://img.shields.io/github/issues/idugeni/auto-commit-message" alt="GitHub Issues" />
+</div>
+
+<div>
 <img src="https://img.shields.io/github/stars/idugeni/auto-commit-message" alt="GitHub Stars" />
 <img src="https://img.shields.io/github/forks/idugeni/auto-commit-message" alt="GitHub Forks" />
+</div>
 
 </div>
 

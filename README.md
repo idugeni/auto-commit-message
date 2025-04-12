@@ -1,18 +1,20 @@
 # Auto Commit Message
 
-<p align="center">
-  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
-  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.7%2B-blue" alt="Python Version"></a>
-  <a href="https://conventionalcommits.org"><img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-brightgreen.svg" alt="Conventional Commits"></a>
-  <a href="http://makeapullrequest.com"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
-  <a href="https://github.com/idugeni/auto-commit-message/issues"><img src="https://img.shields.io/github/issues/idugeni/auto-commit-message" alt="GitHub Issues"></a>
-  <a href="https://github.com/idugeni/auto-commit-message/stargazers"><img src="https://img.shields.io/github/stars/idugeni/auto-commit-message" alt="GitHub Stars"></a>
-  <a href="https://github.com/idugeni/auto-commit-message/network/members"><img src="https://img.shields.io/github/forks/idugeni/auto-commit-message" alt="GitHub Forks"></a>
-  <a href="https://github.com/idugeni/auto-commit-message/releases"><img src="https://img.shields.io/github/v/release/idugeni/auto-commit-message" alt="GitHub Release"></a>
-</p>
+<div align="center">
+
+<img src="https://img.shields.io/badge/python-3.7%2B-blue" alt="Python Version" />
+<img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-brightgreen.svg" alt="Conventional Commits" />
+<img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" />
+<img src="https://img.shields.io/github/v/release/idugeni/auto-commit-message" alt="GitHub Release" />
+<img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" />
+<img src="https://img.shields.io/github/issues/idugeni/auto-commit-message" alt="GitHub Issues" />
+<img src="https://img.shields.io/github/stars/idugeni/auto-commit-message" alt="GitHub Stars" />
+<img src="https://img.shields.io/github/forks/idugeni/auto-commit-message" alt="GitHub Forks" />
+
+</div>
 
 <p align="center">
-  <img src="https://opengraph.githubassets.com/856c5388bec324b86d5fb9acf0cc386418284ea1/idugeni/auto-commit-message" alt="Auto Commit Message" width="600">
+  <img src="https://opengraph.githubassets.com/856c5388bec324b86d5fb9acf0cc386418284ea1/idugeni/auto-commit-message" alt="Auto Commit Message" width="100%">
 </p>
 
 <p align="center">
@@ -36,9 +38,7 @@
 ## Overview
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=lbaSAhxPpWY">
-    <img src="https://img.youtube.com/vi/lbaSAhxPpWY/maxresdefault.jpg" alt="Git Commit Like a Pro! Use Gemini AI to Automate Perfect Messages!" width="600">
-  </a>
+  <img src="public/auto-commit-message.gif" alt="Auto Commit Message Demo" width="100%">
 </p>
 
 Auto Commit Message adalah alat canggih yang dirancang untuk meningkatkan alur kerja Git Anda melalui pembuatan pesan commit yang didukung oleh AI. Dengan memanfaatkan model bahasa canggih Google Gemini, aplikasi ini menganalisis perubahan repositori untuk menghasilkan pesan commit yang tepat dan terstandarisasi sesuai dengan praktik terbaik.

@@ -7,9 +7,9 @@ class Config:
     """Configuration settings for the application"""
     # Use platform-independent path for the environment file
     GLOBAL_ENV_PATH = Path(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env.local"))
-    MODEL_NAME = "gemini-2.0-flash-thinking-exp-01-21"
+    MODEL_NAME = "gemini-2.5-pro-exp-03-25"
     GENERATION_CONFIG = {
-        "temperature": 0.7,
+        "temperature": 2,
         "top_p": 0.95,
         "top_k": 64,
         "max_output_tokens": 65536,

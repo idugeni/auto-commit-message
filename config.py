@@ -9,8 +9,8 @@ class Config:
     GLOBAL_ENV_PATH = Path(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env.local"))
     MODEL_NAME = "gemini-2.5-pro-exp-03-25"
     GENERATION_CONFIG = {
-        "temperature": 2,
-        "top_p": 0.95,
+        "temperature": 0.9,
+        "top_p": 1,
         "top_k": 64,
         "max_output_tokens": 65536,
         "response_mime_type": "text/plain",

@@ -279,8 +279,8 @@ class CommitMessage:
             # If description doesn't start with a list item, treat first paragraph as opening
             if not LIST_ITEM_REGEX.match(description_parts[0]):
                 parts.append(self._format_description(description_parts[0]))
+                parts.append('')  # Always add spacing after opening paragraph
                 if len(description_parts) > 1:
-                    parts.append('')  # Add spacing before list items
                     parts.append(self._format_description(description_parts[1]))
             else:
                 # If no opening paragraph, just add the description as is

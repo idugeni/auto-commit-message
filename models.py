@@ -4,10 +4,24 @@ from enum import Enum
 from dataclasses import dataclass, field
 import re
 import textwrap
-from config import Config  # Ensure config.py is importable
+from config import Config  # Ensure that config.py is importable
+
+# Cache configuration for performance and clarity
+COMMIT_TYPES = Config.COMMIT_TYPES
+COMMIT_SCOPE_PATTERN = Config.COMMIT_SCOPE_PATTERN
+MAX_TITLE_LENGTH = Config.MAX_TITLE_LENGTH
+MAX_COMMIT_BODY_LENGTH = Config.MAX_COMMIT_BODY_LENGTH
+
+# Precompile frequently used regex patterns
+HEADER_WITH_SCOPE_REGEX = re.compile(r"^([a-z]+)\((.+)\)$")
+LIST_ITEM_REGEX = re.compile(r'^([-*•]|\d+\.|[a-zA-Z]\.)\s+(.+)$')
+
+class CommitMessageError(Exception):
+    """Custom exception for commit message validation errors."""
+    pass
 
 class CommitType(Enum):
-    """Valid commit types enumeration"""
+    """Enumeration of valid commit types following Conventional Commits."""
     BUILD = "build"
     CI = "ci"
     CHORE = "chore"
@@ -24,160 +38,126 @@ class CommitType(Enum):
 @dataclass
 class CommitMessage:
     """
-    Represents a formatted commit message with an enhanced structure.
-    Validation and primary formatting occur during the parsing process.
+    Represents a formatted commit message with structured sections.
+    Validation and primary formatting occur during parsing.
     """
     title: str
     description: str = field(default="")
     footer: str = field(default="")
-    # is_breaking_change is set during parsing, not initial initialization
     is_breaking_change: bool = field(init=False, default=False)
 
     @staticmethod
     def _validate_and_format_title(raw_title: str) -> tuple[str, bool]:
         """
         Validates the raw title against Conventional Commit rules and formats it.
-        Returns the validated title and a boolean indicating if it's a breaking change.
-        Raises ValueError on validation failure.
+        Ensures the title is not truncated and maintains readability.
+        
+        Args:
+            raw_title (str): The raw commit title.
+        
+        Returns:
+            tuple[str, bool]: The validated and formatted title, and a flag indicating a breaking change.
+        
+        Raises:
+            CommitMessageError: If the title format is invalid.
         """
         title = raw_title.strip()
-
-        # 1. Basic Format Check: must contain ':' and a description part
         if ":" not in title:
-            raise ValueError("Title must contain ':' to separate type and description.")
-        
+            raise CommitMessageError("Validation error: Title must include ':' to separate type and description.")
+
         parts = title.split(":", 1)
-        header = parts[0].strip()  # Contains type, optional scope, optional '!'
+        header = parts[0].strip()    # Contains type, optional scope, optional '!'
         description = parts[1].strip()
-        
         if not description:
-            raise ValueError("Description part after ':' cannot be empty.")
-        
-        # Capitalize first letter of description if it's not already
+            raise CommitMessageError("Validation error: Description after ':' cannot be empty.")
+
+        # Capitalize the first letter of the description if necessary
         if description[0].islower():
             description = description[0].upper() + description[1:]
 
-        # 2. Check Breaking Change Marker '!': must be right before ':'
+        # Check for breaking change marker '!' before the colon
         is_breaking = False
         if header.endswith("!"):
             is_breaking = True
-            # Remove '!' for further parsing, ensure header isn't empty afterward
             header = header[:-1].strip()
             if not header:
-                raise ValueError("Invalid title format: Breaking change '!' cannot be the only character before ':'")
+                raise CommitMessageError("Validation error: '!' for breaking change cannot be the only character before ':'")
 
-        # 3. Parse Type and Scope
+        # Parse type and scope
         type_part = header
         scope_part = None
-        # Match 'type(scope)' format using simple regex
-        match = re.match(r"^([a-z]+)\((.+)\)$", header)
+        match = HEADER_WITH_SCOPE_REGEX.match(header)
         if match:
             type_part = match.group(1)
             scope_part = match.group(2)
-            # Validate scope content
             if not scope_part:
-                raise ValueError("Scope cannot be empty when parentheses are present.")
-            if not re.fullmatch(Config.COMMIT_SCOPE_PATTERN, scope_part):
-                raise ValueError(f"Scope '({scope_part})' contains invalid characters. Allowed pattern: {Config.COMMIT_SCOPE_PATTERN}")
+                raise CommitMessageError("Validation error: Scope cannot be empty when using parentheses.")
+            if not re.fullmatch(COMMIT_SCOPE_PATTERN, scope_part):
+                raise CommitMessageError(
+                    f"Validation error: Scope '({scope_part})' contains invalid characters. Allowed pattern: {COMMIT_SCOPE_PATTERN}"
+                )
         elif '(' in header or ')' in header:
-            # If parentheses exist but don't match the 'type(scope)' regex
-            raise ValueError("Invalid scope format. Use 'type(scope)' or just 'type'.")
-        # else: No scope, type_part is correct
+            raise CommitMessageError("Validation error: Invalid scope format. Use 'type(scope)' or just 'type'.")
 
-        # 4. Validate Type
-        if type_part not in Config.COMMIT_TYPES:
-            # Provide suggestion if the issue is only case sensitivity
-            if type_part.lower() in Config.COMMIT_TYPES:
-                raise ValueError(f"Invalid type: '{type_part}'. Type must be lowercase. Did you mean '{type_part.lower()}'?")
+        # Validate type
+        if type_part not in COMMIT_TYPES:
+            if type_part.lower() in COMMIT_TYPES:
+                raise CommitMessageError(f"Validation error: Type '{type_part}' must be in lowercase. Did you mean '{type_part.lower()}'?")
             else:
-                raise ValueError(f"Invalid type: '{type_part}'. Must be one of: {', '.join(Config.COMMIT_TYPES)}")
+                allowed = ', '.join(COMMIT_TYPES)
+                raise CommitMessageError(f"Validation error: Type '{type_part}' is not valid. It must be one of: {allowed}")
 
-        # 5. Reconstruct Header (including '!' if breaking change)
+        # Reconstruct header (include '!' if breaking change)
         final_header = type_part
         if scope_part:
             final_header += f"({scope_part})"
         if is_breaking:
             final_header += "!"
 
-        # 6. Final Title Construction and Additional Validation
-        # Remove trailing period from description (unless it's ellipsis '...')
+        # Remove trailing period from the description (unless it is ellipsis '...')
         if description.endswith('.') and not description.endswith('...'):
             description = description[:-1]
-            
-        # Ensure description doesn't start with lowercase after type
+        # Ensure proper capitalization of description
         if description[0].islower():
             description = description[0].upper() + description[1:]
 
         final_title = f"{final_header}: {description}"
 
-        # 7. Check Title Length
-        if len(final_title) > Config.MAX_TITLE_LENGTH:
-            # Try to shorten description while keeping meaning
-            words = description.split()
-            shortened = words[0]
-            for word in words[1:]:
-                test_title = f"{final_header}: {shortened} {word}"
-                if len(test_title) <= Config.MAX_TITLE_LENGTH:
-                    shortened += f" {word}"
-                else:
-                    break
-            if len(f"{final_header}: {shortened}") <= Config.MAX_TITLE_LENGTH:
-                final_title = f"{final_header}: {shortened}"
-            else:
-                raise ValueError(f"Title length ({len(final_title)}) exceeds maximum limit ({Config.MAX_TITLE_LENGTH}) and cannot be shortened: '{final_title[:Config.MAX_TITLE_LENGTH]}...'")
+        # Check title length and raise error if too long
+        if len(final_title) > MAX_TITLE_LENGTH:
+            raise CommitMessageError(f"Validation error: Title length ({len(final_title)}) exceeds maximum allowed length ({MAX_TITLE_LENGTH}). Please provide a shorter description.")
+
 
         return final_title, is_breaking
 
     @staticmethod
-    def _format_body_part(text_block: str, is_footer: bool = False) -> str:
+    def _format_description(text_block: str) -> str:
         """
-        Formats a block of text (description or footer) with line wrapping
-        while attempting to preserve paragraph structure.
-        For footer, creates a more concise summary without bullet points.
-        Handles various formats including single paragraphs, bullet points,
-        and multiple changes flexibly.
+        Formats the commit description while preserving details and paragraph structure.
+
+        Args:
+            text_block (str): The description block text.
+
+        Returns:
+            str: The formatted description.
         """
         if not text_block:
             return ""
-
-        # For footer, create a concise summary without bullet points
-        if is_footer:
-            # Split into paragraphs and clean up each paragraph
-            paragraphs = text_block.strip().split('\n\n')
-            summary_parts = []
-            for p in paragraphs:
-                # Remove bullet points and clean up the text
-                lines = p.strip().split('\n')
-                cleaned_lines = [re.sub(r'^[-*•]\s+|^\d+\.\s+|^[a-zA-Z]\.\s+', '', line.strip()) for line in lines]
-                # Take first non-empty line after cleaning
-                first_line = next((line for line in cleaned_lines if line), '')
-                if first_line:
-                    summary_parts.append(first_line)
-            # Join with semicolons for a compact representation
-            return '; '.join(summary_parts)
-
-        # For description, preserve full detail with paragraphs
-        # First, normalize line endings and remove excessive blank lines
+        # Normalize newlines and remove excessive blank lines
         text_block = re.sub(r'\n{3,}', '\n\n', text_block.strip())
         paragraphs = text_block.split('\n\n')
         wrapped_paragraphs = []
 
         for paragraph in paragraphs:
-            # Handle bullet points, numbered lists, and regular text
             lines = paragraph.strip().split('\n')
             wrapped_lines = []
-            
             for line in lines:
-                # Enhanced pattern matching for various list formats
-                list_match = re.match(r'^([-*•]|\d+\.|[a-zA-Z]\.)\s+(.+)$', line)
+                list_match = LIST_ITEM_REGEX.match(line)
                 if list_match:
-                    # Preserve list marker and handle content separately
                     marker = list_match.group(1)
                     content = list_match.group(2)
                     indent = ' ' * (len(marker) + 1)
-                    
-                    # Wrap the content part only
-                    wrap_width = Config.MAX_COMMIT_BODY_LENGTH - len(indent)
+                    wrap_width = MAX_COMMIT_BODY_LENGTH - len(indent)
                     wrapped = textwrap.wrap(
                         content,
                         width=wrap_width,
@@ -189,17 +169,13 @@ class CommitMessage:
                         initial_indent='',
                         subsequent_indent=indent
                     )
-                    
                     if wrapped:
-                        # First line with marker
                         wrapped_lines.append(f"{marker} {wrapped[0]}")
-                        # Subsequent lines with proper indentation
                         wrapped_lines.extend(indent + line for line in wrapped[1:])
                 else:
-                    # Regular paragraph text
                     wrapped = textwrap.wrap(
                         line,
-                        width=Config.MAX_COMMIT_BODY_LENGTH,
+                        width=MAX_COMMIT_BODY_LENGTH,
                         replace_whitespace=False,
                         drop_whitespace=True,
                         break_long_words=False,
@@ -208,69 +184,111 @@ class CommitMessage:
                         initial_indent='',
                         subsequent_indent=''
                     )
-                    # Ensure we don't lose any content
                     if not wrapped and line.strip():
                         wrapped = [line.strip()]
                     wrapped_lines.extend(wrapped)
-            
-            # Only add non-empty paragraphs
             if wrapped_lines:
                 wrapped_paragraphs.append('\n'.join(wrapped_lines))
-
-        # Rejoin paragraphs with double newlines
         return '\n\n'.join(wrapped_paragraphs)
+
+    @staticmethod
+    def _format_footer(text_block: str) -> str:
+        """
+        Formats the commit footer to generate a concise summary without list markers.
+        
+        Args:
+            text_block (str): The footer text block.
+
+        Returns:
+            str: The formatted footer as a compact summary.
+        """
+        if not text_block:
+            return ""
+        paragraphs = text_block.strip().split('\n\n')
+        summary_parts = []
+        for p in paragraphs:
+            lines = p.strip().split('\n')
+            # Remove bullet points and numbering from each line
+            cleaned_lines = [re.sub(r'^[-*•]\s+|^\d+\.\s+|^[a-zA-Z]\.\s+', '', line.strip()) for line in lines]
+            first_line = next((line for line in cleaned_lines if line), '')
+            if first_line:
+                summary_parts.append(first_line)
+        return '; '.join(summary_parts)
 
     @classmethod
     def parse(cls, message: str) -> 'CommitMessage':
         """
-        Parses a raw commit message string, validates the title,
-        formats the body/footer, and returns a CommitMessage instance.
+        Parses a raw commit message string, validates the title, formats the
+        description and footer, and returns a CommitMessage instance.
+
+        Args:
+            message (str): The raw commit message.
+
+        Returns:
+            CommitMessage: The formatted commit message instance.
+
+        Raises:
+            CommitMessageError: If the commit message format is invalid.
         """
         if not message:
-            raise ValueError("Cannot parse an empty commit message.")
+            raise CommitMessageError("Validation error: Commit message cannot be empty.")
 
-        # Split into potential title, body, footer
+        # Split into title, description, and footer
         parts = message.strip().split('\n\n', 2)
         raw_title = parts[0]
 
-        # Validate and format the title (raises ValueError on failure)
         try:
             validated_title, is_breaking = cls._validate_and_format_title(raw_title)
-        except ValueError as e:
-            # Add context to the title validation error
-            raise ValueError(f"Title validation failed: {e}") from e
+        except CommitMessageError as e:
+            raise CommitMessageError(f"Title validation failed: {e}") from e
 
-        # Extract and format body and footer
         raw_description = parts[1].strip() if len(parts) > 1 else ""
         raw_footer = parts[2].strip() if len(parts) > 2 else ""
 
-        # Use _format_body_part for description and footer consistently
-        formatted_description = cls._format_body_part(raw_description)
-        formatted_footer = cls._format_body_part(raw_footer, is_footer=True)
+        formatted_description = cls._format_description(raw_description)
+        formatted_footer = cls._format_footer(raw_footer)
 
-        # Create instance
         instance = cls(
             title=validated_title,
             description=formatted_description,
             footer=formatted_footer
         )
-        # Set breaking change flag based on title validation result
         instance.is_breaking_change = is_breaking
 
         return instance
 
     def __str__(self) -> str:
-        """Reconstructs the formatted commit message string."""
-        parts = [self.title]
+        """
+        Reconstructs and returns the final formatted commit message.
+        Ensures proper formatting and line wrapping for all sections.
+        Includes an opening paragraph in description and properly displays footer.
+        
+        Returns:
+            str: The commit message with proper section separation and formatting.
+        """
+        parts = []
+        
+        # Add title (already validated and formatted)
+        parts.append(self.title)
+        
+        # Add description with opening paragraph if present
         if self.description:
-            # Add blank line before body
-            parts.extend(['', self.description])
+            parts.append('')  # Add blank line after title
+            description_parts = self.description.split('\n\n', 1)
+            
+            # If description doesn't start with a list item, treat first paragraph as opening
+            if not LIST_ITEM_REGEX.match(description_parts[0]):
+                parts.append(self._format_description(description_parts[0]))
+                if len(description_parts) > 1:
+                    parts.append('')  # Add spacing before list items
+                    parts.append(self._format_description(description_parts[1]))
+            else:
+                # If no opening paragraph, just add the description as is
+                parts.append(self._format_description(self.description))
+        
+        # Add footer with proper formatting
         if self.footer:
-            # Add blank line before footer if body exists, OR if no body but footer exists
-            if self.description or (not self.description and self.footer):
-                parts.append('')
-            parts.append(self.footer)
-
-        # Join all parts with a single newline
-        # Blank lines between sections were added explicitly above
+            parts.append('')  # Ensure blank line before footer
+            parts.append(self._format_description(self.footer))
+        
         return '\n'.join(parts)

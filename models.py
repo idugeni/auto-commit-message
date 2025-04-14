@@ -134,15 +134,17 @@ class CommitMessage:
     def _format_description(text_block: str) -> str:
         """
         Formats the commit description while preserving details and paragraph structure.
+        Ensures no text is truncated and maintains proper paragraph formatting.
 
         Args:
             text_block (str): The description block text.
 
         Returns:
-            str: The formatted description.
+            str: The formatted description with preserved structure.
         """
         if not text_block:
             return ""
+        
         # Normalize newlines and remove excessive blank lines
         text_block = re.sub(r'\n{3,}', '\n\n', text_block.strip())
         paragraphs = text_block.split('\n\n')
@@ -151,6 +153,7 @@ class CommitMessage:
         for paragraph in paragraphs:
             lines = paragraph.strip().split('\n')
             wrapped_lines = []
+            
             for line in lines:
                 list_match = LIST_ITEM_REGEX.match(line)
                 if list_match:
@@ -158,37 +161,45 @@ class CommitMessage:
                     content = list_match.group(2)
                     indent = ' ' * (len(marker) + 1)
                     wrap_width = MAX_COMMIT_BODY_LENGTH - len(indent)
+                    
+                    # Preserve long words by allowing them to exceed the wrap width
                     wrapped = textwrap.wrap(
                         content,
                         width=wrap_width,
                         replace_whitespace=False,
                         drop_whitespace=True,
-                        break_long_words=False,
+                        break_long_words=True,  # Changed to True to prevent truncation
                         break_on_hyphens=True,
                         expand_tabs=True,
                         initial_indent='',
                         subsequent_indent=indent
                     )
+                    
                     if wrapped:
                         wrapped_lines.append(f"{marker} {wrapped[0]}")
                         wrapped_lines.extend(indent + line for line in wrapped[1:])
                 else:
+                    # Handle regular paragraphs with improved wrapping
                     wrapped = textwrap.wrap(
                         line,
                         width=MAX_COMMIT_BODY_LENGTH,
                         replace_whitespace=False,
                         drop_whitespace=True,
-                        break_long_words=False,
+                        break_long_words=True,  # Changed to True to prevent truncation
                         break_on_hyphens=True,
                         expand_tabs=True,
                         initial_indent='',
                         subsequent_indent=''
                     )
+                    
+                    # Preserve empty lines and non-wrapped content
                     if not wrapped and line.strip():
                         wrapped = [line.strip()]
                     wrapped_lines.extend(wrapped)
+            
             if wrapped_lines:
                 wrapped_paragraphs.append('\n'.join(wrapped_lines))
+        
         return '\n\n'.join(wrapped_paragraphs)
 
     @staticmethod
